@@ -26,4 +26,5 @@
  * ```
  */
 
-import "../react/app.jsx"
+import "../react/app.jsx";
+
