@@ -28,3 +28,4 @@
 
 import "../react/app.js";
 
+console.log(window.config)
