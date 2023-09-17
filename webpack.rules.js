@@ -1,3 +1,5 @@
+const path = require('path')
+
 module.exports = [
   // Add support for native node modules
   {
@@ -18,12 +20,18 @@ module.exports = [
   },
   // jsx config
   {
-    test: /\.jsx?$/,
+    test: /\.(jsx|js)$/,
+    include: path.resolve(__dirname, 'react'),
     exclude: /node_modules/,
     use: {
       loader: 'babel-loader',
       options: {
-        presets: ['@babel/preset-react']
+        presets: ['@babel/preset-env', [
+          '@babel/preset-react',
+          {
+            runtime: 'automatic',
+          }],
+        ]
       }
     }
   }
