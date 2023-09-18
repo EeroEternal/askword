@@ -7,7 +7,7 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-const createWindow = () => {
+const createWindow = (config) => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1200,
@@ -17,20 +17,25 @@ const createWindow = () => {
     },
   });
 
+
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
-};
+
+  // Send config to renderer, must **finish load**
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.send('load-config', config);
+  });
+}
 
 const init = () => {
   // load config file
   config = load_config();
-  console.log("config: ", config);
 
   // create window
-  createWindow();
+  createWindow(config);
 }
 
 // This method will be called when Electron has finished
