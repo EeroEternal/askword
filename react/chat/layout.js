@@ -1,23 +1,22 @@
-export default function Chat() {
-    return (
-        <div className="">
-            <div
-                className="hidden sm:block sm:fixed sm:left-0 sm:h-full sm:bg-white sm:border-r sm:border-gray/20 z-10"
-            >
-                Sidebar
-            </div>
+import Input from './input'
 
-            <div className="z-0">
-                <div className="bg-white">
-                    <div className="">
-                        Prompt
-                    </div>
+export default function Chat({ config }) {
 
-                    <div className="fixed bottom-0 w-full bg-white">
-                        Input
-                    </div>
-                </div>
-            </div>
-        </div>
-    )
+  return (
+    <div className="flex justify-center items-center flex-col">
+      <h1 className="text-3xl mb-4 mt-10">欢迎使用</h1>
+
+      <Input />
+
+      <div className="w-full p-5 grid grid-cols-3 gap-4">
+        {/* Replace below with your data */}
+        {Array(9).fill(0).map((_, index) => (
+          <div key={index} className="rounded overflow-hidden shadow-lg p-6 text-center">
+            <p className="text-xl text-gray-700">Card {index + 1}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+  )
 }

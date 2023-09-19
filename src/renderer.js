@@ -1,5 +1,17 @@
-import "../react/app.js";
+// import "../react/app.js";
+//
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import Chat from '../react/chat/layout.js';
+import '../react/main.css';
+
+;
 
 window.electronAPI.handleConfig((_event, value) => {
-  console.log("handle config", value)
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(
+    <React.StrictMode>
+      <Chat config={value} />
+    </React.StrictMode>
+  )
 })

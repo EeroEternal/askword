@@ -1,88 +1,26 @@
+import { useState } from 'react';
+const input_css = "flex flex-row bg-white border rounded drop-shadow shadow-xs rounded-lg w-2/3 items-center justify-center"
+const textarea_css = "w-full text-sm pl-4 resize-none overflow-y-auto focus:outline-none border-0 focus:ring-0 rounded-lg mt-2 "
+
+
 export default function Input() {
-    const input_css = "flex flex-row py-2 bg-white gap-2 border rounded drop-shadow shadow-xs rounded-lg w-full";
+  const [height, setHeight] = useState(30); // Default height
 
-
-    return (
-        <div
-            class="group w-full lg:pl-60 lg:mx-auto pt-2 border-t md:border-t-0 md:border-transparent md:bg-vert-light-gradient bg-white md:!bg-transparent"
-        >
-            <div
-                class="h-18 flex flex-col text-base md:max-w-2xl lg:max-w-xl xl:max-w-3xl lg:px-0 mx-auto"
-            >
-                <div class={input_css}>
-                    <textarea
-                        bind:this={input_bind}
-                        id="input_message_text"
-                        rows="1"
-                        class="flex w-full py-1 text-sm pl-4 resize-none overflow-y-auto focus:outline-none border-0 focus:ring-0"
-                        placeholder={isMobile
-                            ? $_("page.chat.mobile-message")
-                            : $_("page.chat.send-message")}
-                        tabindex="0"
-                        on:keydown={async (e) => inputKeyDown(e)}
-                        on:input={inputChange}
-                    />
-                    <!--send button-->
-                    <div class="flex flex-col justify-between">
-                        <div class="flex-1" />
-                        <button
-                            type="submit"
-                            id="send-message-button"
-                            class="flex text-sm rounded-md align-bottom pr-3 h-6"
-                            on:click={async (e) => sendMessage(e)}
-                            on:keydown={async (e) => sendMessage(e)}
-                        >
-                            <Send color={send_color} ready={chat_ready} />
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex justify-between pt-1 pb-2">
-                    <div
-                        class="flex flex-row text-xs text-teal-600 pl-1 transition-opacity"
-                    >
-                        {notify}
-                    </div>
-                    <div class="">
-                        <div class="flex flex-row text-xs text-gray-400">
-                            <p class="pr-2">
-                                {$current_model}
-                            </p>
-
-                            {#if message_left !== 999999}
-                            <div class="border-r border-gray-300 h-4" />
-
-                            <p id="message-left" class="pl-2">
-                                {$_("page.chat.message-left").replace(
-                                    "{}",
-                                    message_left
-                                )}
-                            </p>
-                            {/if}
-
-                                < div class="text-xs text-teal-500 pl-2">
-                            <button
-                                on:click={() => {
-                                    showPay = true;
-                                }}
-                            >
-                                {message_left === 0
-                                    ? $_("page.chat.no-message-left")
-                                    : ""}
-                            </button>
-                        </>
-                    </div>
-                </div>
-            </div>
-        </div>
-{ #if showPay }
-    <Pay
-        on:update={() => {
-            showPay = false;
-        }}
-    />
-    {
-        /if}
-</div >
-    );
+  function handleKeyDown(event) {
+    if (event.key === 'Enter') {
+      setHeight(prevHeight => prevHeight + 20);
     }
+  }
+
+  return (
+
+    <div className={input_css}>
+      <textarea style={{ height: `${height}px`, resize: "none", overflowY: "hidden" }} onKeyDown={handleKeyDown} className={textarea_css} placeholder="请输入..." spellCheck="false" rows="1" />
+      <button type="submit" className="ml-4 flex items-center justify-center  text-gray-300 hover:text-gray-600 font-bold py-2 px-4 rounded-full">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+        </svg>
+      </button>
+    </div>
+  )
+}
