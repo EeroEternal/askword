@@ -2,11 +2,15 @@ import Input from './input'
 
 export default function Chat({ config }) {
 
+  const handleInput = (value) => {
+    console.log('input value:', value)
+  }
+
   return (
     <div className="flex justify-center items-center flex-col">
       <h1 className="text-3xl mb-4 mt-10">欢迎使用</h1>
 
-      <Input />
+      <Input handleFinish={handleInput} />
 
       <div className="w-full p-5 grid grid-cols-3 gap-4">
         {/* Replace below with your data */}

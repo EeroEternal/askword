@@ -1,9 +1,9 @@
 import { useState } from 'react';
 const input_css = "flex flex-row bg-white border rounded drop-shadow shadow-xs rounded-lg w-2/3 items-center justify-between"
-const textarea_css = "w-full text-sm pl-4 resize-none overflow-y-hidden focus:outline-none border-0 focus:ring-0 rounded-lg mt-2"
+const textarea_css = "w-full text-sm pl-4 resize-none overflow-y-hidden focus:outline-none border-0 focus:ring-0 rounded-lg mt-2 max-h-80"
 
 
-export default function Input() {
+export default function Input({ handleFinish }) {
   const init_height = 20;
   const [height, setHeight] = useState(init_height); // Default height
   const [active, setActive] = useState(false);
@@ -14,8 +14,19 @@ export default function Input() {
   function handleKeyDown(event) {
     setActive(true);
 
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && event.shiftKey) {
+      // Handle desired action here for Shift+Enter key press
       setHeight(prevHeight => prevHeight + 20);
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      // Handle desired action here for Enter key press
+      setHeight(init_height);
+      setActive(false);
+      handleFinish(event.target.value);
+      event.target.value = '';
+      return;
     }
   }
 
@@ -36,7 +47,7 @@ export default function Input() {
 
     <div className={input_css}>
       <div className='w-full pr-12 py-2'>
-        <textarea style={{ height: `${height} px` }} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} className={textarea_css} placeholder="请提问..." spellCheck="false" rows="1" tabIndex="0" autoFocus />
+        <textarea style={{ height: `${height}px` }} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} className={textarea_css} placeholder="请提问..." spellCheck="false" rows="1" tabIndex="0" autoFocus />
       </div>
 
       <div className="relative">
