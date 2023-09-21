@@ -17,10 +17,13 @@ export default function Chat({ config }) {
   }
 
   return (
-    <div className="flex flex-col gap-y-4">
-      <h1 className="text-3xl mb-4 mt-10 text-center">欢迎使用</h1>
+    <div className={`flex flex-col gap-y-4 ${chat ? 'bg-gray-100' : "bg-white"}`} >
+      {!chat &&
+        <h1 className="text-3xl mb-4 mt-10 text-center">欢迎使用</h1>
+      }
 
-      {chat &&
+      {
+        chat &&
         <div className={`px-10 transition - opacity duration - 500 ${chat ? 'opacity-100' : 'opacity-0'} `}>
           <List list={sample_chat} />
         </div>
