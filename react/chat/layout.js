@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import Input from './input'
+import List from './list'
 import "./layout.css"
+import sample_chat from './sample.js'
 
 export default function Chat({ config }) {
   // when input and enter , is chat state
-  const [chat, SetChat] = useState(false)
+  const [chat, SetChat] = useState(true)
 
   const chat_css = 'flex justify-center items-center w-full fixed bottom-0 mb-3 z-10'
   const input_css = "flex justify-center items-center w-full"
@@ -15,13 +17,14 @@ export default function Chat({ config }) {
   }
 
   return (
-    <div className="flex flex-col gap-y-4 px-10">
+    <div className="flex flex-col gap-y-4">
       <h1 className="text-3xl mb-4 mt-10 text-center">欢迎使用</h1>
 
-      <div className={`transition-opacity duration-500 ${chat ? 'opacity-100' : 'opacity-0'}`}>
-        chat list
-      </div>
-
+      {chat &&
+        <div className={`px-10 transition - opacity duration - 500 ${chat ? 'opacity-100' : 'opacity-0'} `}>
+          <List list={sample_chat} />
+        </div>
+      }
 
       <div className={chat ? chat_css : input_css}>
         <Input handleFinish={handleInput} />
