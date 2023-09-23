@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 
 const { load_config } = require('./config.js');
 
@@ -28,6 +28,28 @@ const createWindow = (config) => {
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.send('load-config', config);
   });
+
+
+  // init request ipc
+  ipcMain.on('prompt', (event, arg) => {
+    console.log('request:', arg);
+    mainWindow.webContents.send('promptReponse', 'pong1');
+
+    setTimeout(() => {
+      // This code will run after 1 second
+      mainWindow.webContents.send('promptReponse', 'pong2');
+
+      setTimeout(() => {
+        mainWindow.webContents.send('promptReponse', 'pong3');
+
+        setTimeout(() => {
+
+          mainWindow.webContents.send('promptReponse', 'end');
+        }, 1000)
+      }, 1000)
+
+    }, 1000);
+  });
 }
 
 const init = () => {
@@ -36,6 +58,7 @@ const init = () => {
 
   // create window
   createWindow(config);
+
 }
 
 // This method will be called when Electron has finished

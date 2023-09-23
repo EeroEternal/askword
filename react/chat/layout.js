@@ -1,40 +1,54 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Input from './input'
 import List from './list'
-import "./layout.css"
-import sample_chat from './sample.js'
+const { sendPrompt, onResponse } = window.electronAPI
 
 export default function Chat({ config }) {
   // when input and enter , is chat state
-  const [chat, SetChat] = useState(true)
+  const [chatMode, SetChatMode] = useState(false)
+
+  const [chatList, SetChatList] = useState([])
 
   const chat_css = 'flex justify-center items-center w-full fixed bottom-0 mb-3 z-10'
   const input_css = "flex justify-center items-center w-full"
 
   const handleInput = (value) => {
-    SetChat(true)
-    console.log('input value:', value)
+    SetChatMode(true)
+    sendPrompt(value)
+    SetChatList([...chatList, { prompt: value, answer: "" }])
+
+    // wait for response
+    onResponse('promptReponse', (event, value) => {
+      SetChatList(prevChatList => {
+        let newChatList = [...prevChatList]
+        newChatList[newChatList.length - 1].answer += value
+
+        // notice: should use spread operator to construct new array
+        // otherwise, react will not update the component
+        return [...newChatList]
+      });
+    })
   }
 
   return (
-    <div className={`flex flex-col gap-y-4 ${chat ? 'bg-gray-100' : "bg-white"}`} >
-      {!chat &&
+    <div className={`flex flex-col gap-y-4 ${chatMode ? 'bg-gray-100' : "bg-white"}`} >
+      {!chatMode &&
         <h1 className="text-3xl mb-4 mt-10 text-center">欢迎使用</h1>
       }
 
       {
-        chat &&
-        <div className={`px-10 transition - opacity duration - 500 ${chat ? 'opacity-100' : 'opacity-0'} `}>
-          <List list={sample_chat} />
+        chatMode &&
+        <div className={`px-10 transition - opacity duration - 500 ${chatMode ? 'opacity-100' : 'opacity-0'} `}>
+          <List list={chatList} />
         </div>
       }
 
-      <div className={chat ? chat_css : input_css}>
+      <div className={chatMode ? chat_css : input_css}>
         <Input handleFinish={handleInput} />
       </div>
 
       {
-        !chat &&
+        !chatMode &&
         <div className="w-full grid grid-cols-3 gap-4">
           {/* Replace below with your data */}
           {Array(9).fill(0).map((_, index) => (

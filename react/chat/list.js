@@ -1,23 +1,6 @@
 import ReactMarkdown from 'react-markdown'
-
-const stripIndent = ([str]) => {
-  try {
-    const lines = str.split("\n")
-
-    const firstContentfulLine = lines[0].trim() ? lines[0] : lines[1]
-
-    const indent = firstContentfulLine.match(/^\s*/)[0].length
-
-    const result = lines
-      .map(l => l.slice(indent))
-      .join("\n")
-      .trim()
-
-    return result
-  } catch (_e) {
-    return str
-  }
-}
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
 export default function List({ list }) {
 
@@ -31,8 +14,27 @@ export default function List({ list }) {
           return (
             <div key={index} className="bg-gray-100 rounded-lg">
               <div className="rounded-xl px-3 py-3 break-words">{prompt}</div>
-              <div className="bg-white px-3 py-3 prose">
-                <ReactMarkdown children={answer} />
+              <div className="bg-white px-3 py-3 shadow-sm border-2">
+                <div className='prose'>
+                  <ReactMarkdown children={answer} components={{
+                    code({ node, inline, className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className || '')
+                      return !inline && match ? (
+                        <SyntaxHighlighter
+                          {...props}
+                          children={String(children).replace(/\n$/, '')}
+                          style={oneDark}
+                          language={match[1]}
+                          PreTag="div"
+                        />
+                      ) : (
+                        <code {...props} className={className}>
+                          {children}
+                        </code>
+                      )
+                    }
+                  }} />
+                </div>
               </div>
             </div>)
         })
