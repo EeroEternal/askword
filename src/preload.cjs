@@ -4,8 +4,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   handleConfig: (callback) => {
     ipcRenderer.on('load-config', callback)
   },
-  sendPrompt: (value) => {
-    ipcRenderer.send('prompt', value)
+  sendPrompt: (value, file_id) => {
+    ipcRenderer.send('prompt', value, file_id)
   },
   onResponse: (channel, callback) => {
     ipcRenderer.on(channel, callback)

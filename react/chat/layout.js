@@ -13,8 +13,13 @@ export default function Chat({ config }) {
   const input_css = "flex justify-center items-center w-full"
 
   const handleInput = (value) => {
-    SetChatMode(true)
-    sendPrompt(value)
+    // first time input
+    if (!chatMode) {
+      // set to chat mode
+      SetChatMode(true)
+    }
+
+    sendPrompt(value, "file_id_001")
     SetChatList([...chatList, { prompt: value, answer: "" }])
 
     // wait for response

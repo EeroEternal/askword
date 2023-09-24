@@ -1,7 +1,7 @@
-const http = require('http');
 const { app, BrowserWindow, ipcMain } = require('electron');
 
-const { load_config } = require('./config.js');
+const { load_config } = require('./config.cjs');
+const { send_prompt, send_mock } = require('./prompt.cjs');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -32,34 +32,11 @@ const createWindow = (config) => {
 
 
   // init request ipc
-  ipcMain.on('prompt', (event, arg) => {
-    console.log("go prompt", arg)
-    const data = JSON.stringify({ prompt: arg });
-    const options = {
-      hostname: "127.0.0.1",
-      port: 8002,
-      path: '/router/spark',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': data.length
-      }
-    }
-
-    const request = http.request(options,
-      (res) => {
-        res.on('data', (d) => {
-          mainWindow.webContents.send('promptReponse', d.toString());
-        })
-
-        res.on('end', () => {
-          mainWindow.webContents.send('promptReponse', "\n");
-        })
-      }
-    )
-
-    request.write(data)
-    request.end()
+  ipcMain.on('prompt', (_event, value, file_id) => {
+    console.log('value', value)
+    console.log('file id', file_id)
+    // send_prompt(mainWindow, value)
+    send_mock(mainWindow, file_id)
   });
 }
 
