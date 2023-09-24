@@ -21,7 +21,11 @@ export default function Chat({ config }) {
     onResponse('promptReponse', (event, value) => {
       SetChatList(prevChatList => {
         let newChatList = [...prevChatList]
-        newChatList[newChatList.length - 1].answer += value
+
+        // check previous chat list last record answer contain value
+        // if not contain, then append value to the answer
+        if (!newChatList[newChatList.length - 1].answer.includes(value))
+          newChatList[newChatList.length - 1].answer += value
 
         // notice: should use spread operator to construct new array
         // otherwise, react will not update the component

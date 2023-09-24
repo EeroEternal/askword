@@ -1,3 +1,4 @@
+const http = require('http');
 const { app, BrowserWindow, ipcMain } = require('electron');
 
 const { load_config } = require('./config.js');
@@ -32,23 +33,33 @@ const createWindow = (config) => {
 
   // init request ipc
   ipcMain.on('prompt', (event, arg) => {
-    console.log('request:', arg);
-    mainWindow.webContents.send('promptReponse', 'pong1');
+    console.log("go prompt", arg)
+    const data = JSON.stringify({ prompt: arg });
+    const options = {
+      hostname: "127.0.0.1",
+      port: 8002,
+      path: '/router/spark',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': data.length
+      }
+    }
 
-    setTimeout(() => {
-      // This code will run after 1 second
-      mainWindow.webContents.send('promptReponse', 'pong2');
+    const request = http.request(options,
+      (res) => {
+        res.on('data', (d) => {
+          mainWindow.webContents.send('promptReponse', d.toString());
+        })
 
-      setTimeout(() => {
-        mainWindow.webContents.send('promptReponse', 'pong3');
+        res.on('end', () => {
+          mainWindow.webContents.send('promptReponse', "\n");
+        })
+      }
+    )
 
-        setTimeout(() => {
-
-          mainWindow.webContents.send('promptReponse', 'end');
-        }, 1000)
-      }, 1000)
-
-    }, 1000);
+    request.write(data)
+    request.end()
   });
 }
 
