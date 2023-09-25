@@ -1,7 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 
 const { load_config } = require('./config.cjs');
-const { send_prompt, send_mock } = require('./prompt.cjs');
+const { init_ipc } = require('./ipc.cjs')
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -30,14 +30,9 @@ const createWindow = (config) => {
     mainWindow.webContents.send('load-config', config);
   });
 
-
   // init request ipc
-  ipcMain.on('prompt', (_event, value, file_id) => {
-    console.log('value', value)
-    console.log('file id', file_id)
-    // send_prompt(mainWindow, value)
-    send_mock(mainWindow, file_id)
-  });
+  init_ipc(mainWindow)
+
 }
 
 const init = () => {

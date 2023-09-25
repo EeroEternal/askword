@@ -7,6 +7,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   sendPrompt: (value, file_id) => {
     ipcRenderer.send('prompt', value, file_id)
   },
+  getThreads: () => {
+    ipcRenderer.send('threads')
+  },
   onResponse: (channel, callback) => {
     ipcRenderer.on(channel, callback)
   },
