@@ -1,6 +1,5 @@
 import { useState } from 'react';
-const input_css = "flex flex-row bg-white border rounded drop-shadow shadow-xs rounded-lg w-2/3 items-center justify-between"
-const textarea_css = "w-full text-sm pl-4 resize-none overflow-y-hidden focus:outline-none border-0 focus:ring-0 rounded-lg mt-2 max-h-80"
+
 
 
 export default function Input({ handleFinish }) {
@@ -10,6 +9,9 @@ export default function Input({ handleFinish }) {
 
   const button_css = 'ml-4 flex hover: text-gray-600 font-bold py-2 pr-2 rounded-full mt-1'
   const svg_css = `w-6 h-6 ${active ? 'stroke-gray-600' : 'stroke-gray-300'}`
+  const input_css = "flex flex-row bg-white border rounded drop-shadow shadow-xs rounded-lg w-full items-center justify-between"
+  const textarea_css = "w-full text-sm pl-4 resize-none overflow-y-hidden focus:outline-none border-0 focus:ring-0 rounded-lg mt-2 max-h-80"
+
 
   function handleKeyDown(event) {
     setActive(true);
