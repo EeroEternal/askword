@@ -3,6 +3,7 @@ const { app } = require('electron');
 const fs = require('fs');
 
 // summary for each file, save to threads.json
+// threads.json: [{"file_id": "xxx", "title": "xxx"}, ...]
 function save_summarize(file_id, answer) {
   const fileName = "threads.json"
   const filePath = app.getPath('userData') + '/chat/' + fileName
