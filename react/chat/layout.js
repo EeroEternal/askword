@@ -42,7 +42,7 @@ export default function Chat({ config }) {
   const handleSelect = (file_id) => {
     console.log("select file id: ", file_id)
     // set chat mode
-    SetChatMode(true)
+    // SetChatMode(true)
 
     // send get thread request to main process
     // getThread(file_id)

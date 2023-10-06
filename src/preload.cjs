@@ -10,6 +10,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getThreads: () => {
     ipcRenderer.send('threads')
   },
+  delThread: (file_id) => {
+    ipcRenderer.send('del-thread', file_id)
+  },
   onResponse: (channel, callback) => {
     ipcRenderer.on(channel, callback)
   },

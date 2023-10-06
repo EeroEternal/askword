@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-const { getThreads, onResponse } = window.electronAPI
+const { getThreads, delThread, onResponse } = window.electronAPI
 
 export default function Thread({ handleSelect }) {
 
@@ -16,6 +16,10 @@ export default function Thread({ handleSelect }) {
     setThreads(value)
   });
 
+  onResponse('del-thread', (_event, value) => {
+    setThreads(threads.filter(thread => thread.file_id !== value))
+  });
+
   const showDel = (e, state) => {
     const del = e.target.childNodes[1]
     if (!del) return
@@ -27,9 +31,12 @@ export default function Thread({ handleSelect }) {
     }
   }
 
-  const handleClick = (e) => {
+  const handleClick = (e, file_id) => {
     if (!e.target.closest('.text-gray-400')) {
-      handleSelect(e);
+      handleSelect(file_id);
+    } else {
+      // click delete button
+      delThread(file_id)
     }
   }
 
@@ -39,13 +46,12 @@ export default function Thread({ handleSelect }) {
         <div key={index} className={button_css}
           onMouseEnter={(e) => showDel(e, true)}
           onMouseLeave={(e) => showDel(e, false)}
-          onClick={(e) => handleClick(e)}
+          onClick={(e, file_id) => handleClick(e, thread.file_id)}
         >
           <button
             key={index}
             id={thread.file_id}
             className=" pl-3 text-left text-gray-700"
-            onClick={(e) => e.stopPropagation()}
           >
             {thread.title}
           </button>
