@@ -28,10 +28,10 @@ const createWindow = (config) => {
   // Send config to renderer, must **finish load**
   mainWindow.webContents.on('did-finish-load', () => {
     mainWindow.webContents.send('load-config', config);
+    // init request ipc
+    init_ipc(mainWindow)
   });
 
-  // init request ipc
-  init_ipc(mainWindow)
 
 }
 

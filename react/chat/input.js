@@ -1,7 +1,5 @@
 import { useState } from 'react';
 
-
-
 export default function Input({ handleFinish }) {
   const init_height = 20;
   const [height, setHeight] = useState(init_height); // Default height
@@ -33,7 +31,6 @@ export default function Input({ handleFinish }) {
   }
 
   function handleKeyUp(event) {
-
     if (event.key === 'Backspace') {
       // Handle desired action here for Delete key press
       const textareaValue = event.target.value;

@@ -46,7 +46,7 @@ export default function Thread({ handleSelect }) {
         <div key={index} className={button_css}
           onMouseEnter={(e) => showDel(e, true)}
           onMouseLeave={(e) => showDel(e, false)}
-          onClick={(e, file_id) => handleClick(e, thread.file_id)}
+          onClick={(e) => handleClick(e, thread.file_id)}
         >
           <button
             key={index}

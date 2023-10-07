@@ -35,4 +35,19 @@ function del_thread(file_id) {
   return new_threads;
 }
 
-module.exports = { load_threads, del_thread };
+// get thread
+function load_thread(file_id) {
+  // check file exist
+  const fileName = `${file_id}.json`;
+  const filePath = rootPath + fileName;
+  let thread = [];
+
+  if (fs.existsSync(filePath)) {
+    thread = JSON.parse(fs.readFileSync(filePath));
+  }
+
+  return thread;
+}
+
+
+module.exports = { load_threads, del_thread, load_thread };

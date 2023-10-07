@@ -3,13 +3,12 @@ import Input from './input'
 import List from './list'
 import Thread from './thread'
 import Banner from './banner'
-const { sendPrompt, onResponse } = window.electronAPI
+const { sendPrompt, onResponse, getThread } = window.electronAPI
 import { v4 as uuidv4 } from 'uuid';
 
 export default function Chat({ config }) {
   const [chatMode, SetChatMode] = useState(false)
   const [chatList, SetChatList] = useState([])
-  const [chatID, setChatID] = useState(null)
 
   // css style
   const center_css = "flex justify-center items-center"
@@ -24,33 +23,49 @@ export default function Chat({ config }) {
     }
 
     let random_id = uuidv4()
-    // generate chatID
-    if (!chatID) {
-      setChatID(random_id)
-    }
 
     // send prompt request
     sendPrompt(value, random_id)
 
     // init chat list
     SetChatList([...chatList, { prompt: value, answer: "" }])
-
   }
 
 
   // select list item event
   const handleSelect = (file_id) => {
     console.log("select file id: ", file_id)
-    // set chat mode
-    // SetChatMode(true)
 
     // send get thread request to main process
-    // getThread(file_id)
+    getThread(file_id)
   }
 
+  // banner click home
+  const handleHome = () => {
+    console.log('handle home')
+    SetChatMode(false)
+  }
+
+  // banner click settings
+  const handleSetting = () => {
+    console.log("click settings")
+  }
+
+  onResponse('thread', (_event, value) => {
+    // value is thread chat list
+    SetChatList([...chatList, ...value])
+
+    // set chat mode
+    SetChatMode(true)
+  });
 
   // wait for response
   onResponse('promptReponse', (_event, value) => {
+    console.log("prompt response: ", value)
+
+    // check value is empty
+    if (value === "") return
+
     SetChatList(prevChatList => {
       let newChatList = [...prevChatList]
 
@@ -67,12 +82,7 @@ export default function Chat({ config }) {
 
   return (
     <div className={`flex flex-col gap-y-4 bg-white`} >
-
-      {!chatMode &&
-        <div>
-          <Banner />
-        </div>
-      }
+      <Banner clickHome={handleHome} clickSetting={handleSetting} />
 
       {!chatMode &&
         <h1 className="text-3xl mb-4 mt-10 text-center">欢迎使用</h1>
