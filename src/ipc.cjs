@@ -1,12 +1,11 @@
 const { ipcMain } = require('electron');
-const { send_prompt, send_mock } = require('./prompt.cjs');
+const { send_prompt } = require('./prompt.cjs');
 const { load_threads, load_thread, del_thread } = require('./data.cjs');
 
 function init_ipc(mainWindow) {
   // init request ipc
   ipcMain.on('prompt', async (_event, value, file_id) => {
     await send_prompt(mainWindow, value, file_id)
-    // await send_mock(mainWindow, file_id)
   });
 
   // get threads

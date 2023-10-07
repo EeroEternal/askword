@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow } = require('electron');
 
 const { load_config } = require('./config.cjs');
 const { init_ipc } = require('./ipc.cjs')
@@ -31,8 +31,6 @@ const createWindow = (config) => {
     // init request ipc
     init_ipc(mainWindow)
   });
-
-
 }
 
 const init = () => {

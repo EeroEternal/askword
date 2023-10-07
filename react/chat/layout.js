@@ -83,24 +83,20 @@ export default function Chat({ config }) {
   return (
     <div className={`flex flex-col gap-y-4 bg-white`} >
       <Banner clickHome={handleHome} clickSetting={handleSetting} />
-
       {!chatMode &&
         <h1 className="text-3xl mb-4 mt-10 text-center">欢迎使用</h1>
       }
-
       {
         chatMode &&
         <div className={`px-10 transition - opacity duration - 500 ${chatMode ? 'opacity-100' : 'opacity-0'} `}>
           <List list={chatList} />
         </div>
       }
-
       <div className={chatMode ? chat_css : center_css}>
         <div className='w-[40rem]'>
           <Input handleFinish={handleInput} />
         </div>
       </div>
-
       {
         !chatMode &&
         <div className={center_css}>
