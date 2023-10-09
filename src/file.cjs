@@ -1,25 +1,36 @@
 const { app } = require('electron');
 const fs = require('fs');
 
-async function check_create(filename) {
-  let filePath = app.getPath('userData') + '/chat/' + filename
+// record: {"prompt": "xxx", "answer": "xxx"}
+async function check_create(file_id, json_record, save_summarize) {
+  let filePath = app.getPath('userData') + '/chat/' + file_id + ".json"
 
-  try {
-    await fs.promises.access(filePath, fs.constants.F_OK);
-  } catch (err) {
-    // if directory not exist after 'userData' create it
-    let dirPath = app.getPath('userData') + '/chat/'
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
-    }
-
-    // creating a new file with an empty array
+  let data = [];
+  // check if file exists
+  if (fs.existsSync(filePath)) {
     try {
-      await fs.promises.writeFile(filePath, JSON.stringify([]));
+      // if file exists, read the file and parse it into a JSON array
+      const fileData = await fs.promises.readFile(filePath);
+      data = JSON.parse(fileData);
     } catch (err) {
-      console.error(`Error in creating file ${filename}.`, err);
+      console.error(`Error in reading file ${file_id}.`, err);
     }
   }
+
+  // append the new answer into the array
+  data.push(json_record);
+
+  // write the updated data back into the file
+  try {
+    await fs.promises.writeFile(filePath, JSON.stringify(data));
+  } catch (err) {
+    console.error(`Error in writing to file ${file_id}.`, err);
+  }
+
+  if (data.length === 1) {
+    await save_summarize(file_id, json_record.answer)
+  }
+
 }
 
 module.exports = { check_create };

@@ -17,7 +17,7 @@ export default function List({ list }) {
   }, [list])
 
   return (
-    <div className="px-3 mb-20 pt-10">
+    <div className="px-3 mb-20">
       {
         list.map((item, index) => {
           const answer = item.answer

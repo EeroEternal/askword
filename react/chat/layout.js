@@ -3,12 +3,13 @@ import Input from './input'
 import List from './list'
 import Thread from './thread'
 import Banner from './banner'
-const { sendPrompt, onResponse, getThread } = window.electronAPI
+const { sendPrompt, onResponse, getThread, delThread } = window.electronAPI
 import { v4 as uuidv4 } from 'uuid';
 
 export default function Chat({ config }) {
   const [chatMode, SetChatMode] = useState(false)
   const [chatList, SetChatList] = useState([])
+  const [fileID, setFileID] = useState("")
 
   // css style
   const center_css = "flex justify-center items-center"
@@ -22,27 +23,40 @@ export default function Chat({ config }) {
       SetChatMode(true)
     }
 
-    let random_id = uuidv4()
+    console.log('fileID', fileID)
+    let file_id = fileID === "" ? uuidv4() : fileID;
 
     // send prompt request
-    sendPrompt(value, random_id)
+    sendPrompt(value, file_id)
+
+    // set file id
+    setFileID(file_id)
 
     // init chat list
-    SetChatList([...chatList, { prompt: value, answer: "" }])
+    if (!chatMode) {
+      SetChatList([{ prompt: value, answer: "" }])
+    } else {
+      SetChatList([...chatList, { prompt: value, answer: "" }])
+    }
   }
 
 
   // select list item event
   const handleSelect = (file_id) => {
-    console.log("select file id: ", file_id)
-
     // send get thread request to main process
     getThread(file_id)
   }
 
+  // thread delete event
+  const handleDel = (file_id) => {
+    delThread(file_id)
+    // set chat list to empty
+    SetChatList([])
+  }
+
+
   // banner click home
   const handleHome = () => {
-    console.log('handle home')
     SetChatMode(false)
   }
 
@@ -53,7 +67,7 @@ export default function Chat({ config }) {
 
   onResponse('thread', (_event, value) => {
     // value is thread chat list
-    SetChatList([...chatList, ...value])
+    SetChatList([...value])
 
     // set chat mode
     SetChatMode(true)
@@ -61,8 +75,7 @@ export default function Chat({ config }) {
 
   // wait for response
   onResponse('promptReponse', (_event, value) => {
-    console.log("prompt response: ", value)
-
+    console.log('prompt reponse:', value)
     // check value is empty
     if (value === "") return
 
@@ -101,7 +114,7 @@ export default function Chat({ config }) {
         !chatMode &&
         <div className={center_css}>
           <div className='w-[40rem]'>
-            <Thread handleSelect={handleSelect} />
+            <Thread handleSelect={handleSelect} handleDel={handleDel} />
           </div>
         </div>
       }

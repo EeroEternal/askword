@@ -13,10 +13,10 @@ async function save_summarize(file_id, answer) {
   const summarize_prompt = "总结以下内容为 20 个字以内:" + answer
 
   // get summarize
-  console.log("start")
   let summarize = await stream_request(summarize_prompt)
+
+  // log symmarize type
   summarize = summarize.join('')
-  console.log("summarize: ", summarize)
 
   // save to threads.json
   let threads = []
@@ -27,11 +27,17 @@ async function save_summarize(file_id, answer) {
   // check if file_id exist in threads
   threads.forEach((thread) => {
     if (thread.file_id == file_id) {
-      thread.title = summarize.join('')
-    } else {
-      threads.push({ "file_id": file_id, "title": summarize });
+      thread.title = summarize
     }
   });
+
+  // if not exist, add it
+  if (threads.filter((thread) => thread.file_id == file_id).length == 0) {
+    threads.push({
+      "file_id": file_id,
+      "title": summarize
+    })
+  }
 
   // write to file
   await fs.promises.writeFile(filePath, JSON.stringify(threads));
@@ -39,37 +45,23 @@ async function save_summarize(file_id, answer) {
 
 async function send_prompt(mainWindow, prompt, file_id) {
 
-  // check file exist
-  let fileName = `${file_id}.json`
-  await check_create(fileName)
-
-  console.log("send request")
   try {
     const send_response = (value) => {
       mainWindow.webContents.send('promptReponse', value.toString());
     }
 
     let dataChunks = await stream_request(prompt, send_response)
+
+    // check file exist. if not create it, and write data
     let answer = dataChunks.join('') + "\n";
-    let filePath = app.getPath('userData') + '/chat/' + fileName
-    let fileData = JSON.parse(await fs.promises.readFile(filePath, 'utf8'));
-
-    fileData.push({ "prompt": prompt, "answer": answer });
-
-    // first record to summarize , and save to file
-    if (fileData.length == 1) {
-      console.log('wait response 4')
-      await save_summarize(file_id, answer)
-    }
-
-    await fs.promises.writeFile(filePath, JSON.stringify(fileData));
-
+    await check_create(file_id, {
+      "prompt": prompt,
+      "answer": answer
+    }, save_summarize)
   }
   catch (error) {
     console.error(`Error in fetch request: ${error.message}`);
   }
-
-  console.log('end')
 }
 
 module.exports = { send_prompt }

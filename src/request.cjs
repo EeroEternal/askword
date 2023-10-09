@@ -23,7 +23,6 @@ async function stream_request(prompt, func) {
   for await (const chunk of response.body) {
     const value = chunk.toString();
 
-    // mainWindow.webContents.send('promptReponse', value.toString());
     if (func) func(value)
 
     dataChunks.push(value);

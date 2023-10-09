@@ -1,5 +1,4 @@
 const { app, BrowserWindow } = require('electron');
-
 const { load_config } = require('./config.cjs');
 const { init_ipc } = require('./ipc.cjs')
 
@@ -17,7 +16,6 @@ const createWindow = (config) => {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
-
 
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);

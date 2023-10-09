@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 const { getThreads, delThread, onResponse } = window.electronAPI
 
-export default function Thread({ handleSelect }) {
+export default function Thread({ handleSelect, handleDel }) {
 
   const [threads, setThreads] = useState([])
 
@@ -36,7 +36,7 @@ export default function Thread({ handleSelect }) {
       handleSelect(file_id);
     } else {
       // click delete button
-      delThread(file_id)
+      handleDel(file_id)
     }
   }
 

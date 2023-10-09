@@ -22,7 +22,12 @@ function del_thread(file_id) {
   // delete file with name file_id.json
   const fileName = `${file_id}.json`;
   const filePath = rootPath + fileName;
-  fs.unlinkSync(filePath);
+
+  // check file exist
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+  }
+
 
   // delete record in threads.json
   const threads = load_threads();
@@ -42,9 +47,11 @@ function load_thread(file_id) {
   const filePath = rootPath + fileName;
   let thread = [];
 
+
   if (fs.existsSync(filePath)) {
     thread = JSON.parse(fs.readFileSync(filePath));
   }
+
 
   return thread;
 }
