@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Input from './input'
 import List from './list'
 import Thread from './thread'
@@ -23,7 +23,6 @@ export default function Chat({ config }) {
       SetChatMode(true)
     }
 
-    console.log('fileID', fileID)
     let file_id = fileID === "" ? uuidv4() : fileID;
 
     // send prompt request
@@ -38,6 +37,36 @@ export default function Chat({ config }) {
     } else {
       SetChatList([...chatList, { prompt: value, answer: "" }])
     }
+  }
+
+  const setIPC = () => {
+    onResponse('thread', (_event, value) => {
+      // value is thread chat list
+      SetChatList([...value])
+
+      // set chat mode
+      SetChatMode(true)
+    });
+
+    // wait for response
+    onResponse('promptReponse', (_event, value) => {
+      console.log('prompt reponse:', value)
+      // check value is empty
+      if (value === "") return
+
+      SetChatList(prevChatList => {
+        let newChatList = [...prevChatList]
+
+        // check previous chat list last record answer contain value
+        // if not contain, then append value to the answer
+        if (!newChatList[newChatList.length - 1].answer.includes(value))
+          newChatList[newChatList.length - 1].answer += value
+
+        // notice: should use spread operator to construct new array
+        // otherwise, react will not update the component
+        return [...newChatList]
+      });
+    })
   }
 
 
@@ -65,33 +94,7 @@ export default function Chat({ config }) {
     console.log("click settings")
   }
 
-  onResponse('thread', (_event, value) => {
-    // value is thread chat list
-    SetChatList([...value])
-
-    // set chat mode
-    SetChatMode(true)
-  });
-
-  // wait for response
-  onResponse('promptReponse', (_event, value) => {
-    console.log('prompt reponse:', value)
-    // check value is empty
-    if (value === "") return
-
-    SetChatList(prevChatList => {
-      let newChatList = [...prevChatList]
-
-      // check previous chat list last record answer contain value
-      // if not contain, then append value to the answer
-      if (!newChatList[newChatList.length - 1].answer.includes(value))
-        newChatList[newChatList.length - 1].answer += value
-
-      // notice: should use spread operator to construct new array
-      // otherwise, react will not update the component
-      return [...newChatList]
-    });
-  })
+  useEffect(() => { setIPC() }, [])
 
   return (
     <div className={`flex flex-col gap-y-4 bg-white`} >
