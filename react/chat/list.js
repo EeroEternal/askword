@@ -3,18 +3,20 @@ import { useEffect } from 'react'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
 
-export default function List({ list }) {
+export default function List({ list, scrollEnd }) {
 
   useEffect(() => {
     // scroll view to last record
+    if (scrollEnd) {
+      const last_index = list.length - 1
+      const last_record = document.getElementById(`list-${last_index}`)
 
-    const last_index = list.length - 1
-    const last_record = document.getElementById(`list-${last_index}`)
-
-    if (last_record) {
-      last_record.scrollIntoView()
+      if (last_record) {
+        last_record.scrollIntoView()
+      }
     }
-  }, [list])
+  }, [list, scrollEnd])
+
 
   return (
     <div className="px-3 mb-20">

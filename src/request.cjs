@@ -21,7 +21,10 @@ async function stream_request(prompt, func) {
   if (response.status !== 200) return;
 
   for await (const chunk of response.body) {
+
     const value = chunk.toString();
+
+    console.log("value", value)
 
     if (func) func(value)
 

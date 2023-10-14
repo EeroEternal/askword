@@ -10,6 +10,8 @@ export default function Chat({ config }) {
   const [chatMode, SetChatMode] = useState(false)
   const [chatList, SetChatList] = useState([])
   const [fileID, setFileID] = useState("")
+  const [listScroll, SetListScroll] = useState(false)
+  const [first, SetFirst] = useState(true) // first init layout
 
   // css style
   const center_css = "flex justify-center items-center"
@@ -17,6 +19,10 @@ export default function Chat({ config }) {
 
   // input prompt event
   const handleInput = (value) => {
+    if (first) {
+      SetFirst(false);
+    }
+
     // first time input
     if (!chatMode) {
       // set to chat mode
@@ -36,6 +42,7 @@ export default function Chat({ config }) {
       SetChatList([{ prompt: value, answer: "" }])
     } else {
       SetChatList([...chatList, { prompt: value, answer: "" }])
+      SetListScroll(true)
     }
   }
 
@@ -50,7 +57,6 @@ export default function Chat({ config }) {
 
     // wait for response
     onResponse('promptReponse', (_event, value) => {
-      console.log('prompt reponse:', value)
       // check value is empty
       if (value === "") return
 
@@ -74,6 +80,8 @@ export default function Chat({ config }) {
   const handleSelect = (file_id) => {
     // send get thread request to main process
     getThread(file_id)
+
+    SetFirst(false)
   }
 
   // thread delete event
@@ -87,6 +95,7 @@ export default function Chat({ config }) {
   // banner click home
   const handleHome = () => {
     SetChatMode(false)
+    SetListScroll(false)
   }
 
   // banner click settings
@@ -98,18 +107,20 @@ export default function Chat({ config }) {
 
   return (
     <div className={`flex flex-col gap-y-4 bg-white`} >
-      <Banner clickHome={handleHome} clickSetting={handleSetting} />
-      {!chatMode &&
-        <h1 className="text-3xl mb-4 mt-10 text-center">欢迎使用</h1>
+      <div className={`fixed top-0 left-0 w-full z-10`}>
+        <Banner clickHome={handleHome} clickSetting={handleSetting} />
+      </div>
+      {first &&
+        <h1 className="text-3xl mb-4 pt-40 text-center">欢迎使用</h1>
       }
       {
         chatMode &&
-        <div className={`px-10 transition - opacity duration - 500 ${chatMode ? 'opacity-100' : 'opacity-0'} `}>
-          <List list={chatList} />
+        <div className={`px-10 pt-2 transition - opacity duration - 500 ${chatMode ? 'opacity-100' : 'opacity-0'} `}>
+          <List list={chatList} scrollEnd={listScroll} />
         </div>
       }
       <div className={chatMode ? chat_css : center_css}>
-        <div className='w-[40rem]'>
+        <div className={first ? 'w-[40rem]' : 'w-[40rem] pt-20'} >
           <Input handleFinish={handleInput} />
         </div>
       </div>
