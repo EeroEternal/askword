@@ -1,24 +1,6 @@
-import { useEffect, useState } from 'react'
-const { getThreads, delThread, onResponse } = window.electronAPI
-
-export default function Thread({ handleSelect, handleDel }) {
-
-  const [threads, setThreads] = useState([])
+export default function Thread({ threads, handleSelect, handleDel }) {
 
   const button_css = "flex justify-between py-3 gap-3 w-full mt-3 bg-gray-50 shadow border rounded-xl hover:bg-gray-200"
-
-  useEffect(() => {
-    // send request to main process to get threads
-    getThreads()
-  }, [])
-
-  onResponse('threads', (_event, value) => {
-    setThreads(value)
-  });
-
-  onResponse('del-thread', (_event, value) => {
-    setThreads(threads.filter(thread => thread.file_id !== value))
-  });
 
   const showDel = (e, state) => {
     const del = e.target.childNodes[1]
@@ -42,7 +24,7 @@ export default function Thread({ handleSelect, handleDel }) {
 
   return (
     <div className="w-full">
-      {threads.map((thread, index) => (
+      {threads && threads.map((thread, index) => (
         <div key={index} className={button_css}
           onMouseEnter={(e) => showDel(e, true)}
           onMouseLeave={(e) => showDel(e, false)}

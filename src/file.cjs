@@ -28,7 +28,16 @@ async function check_create(file_id, json_record, save_summarize) {
   }
 
   if (data.length === 1) {
-    await save_summarize(file_id, json_record.answer)
+    const answerLength = json_record.answer.split(' ').length;
+    let summary;
+
+    if (answerLength > 200) {
+      summary = json_record.answer.split(' ', 200).join(' ');
+    } else {
+      summary = json_record.answer
+    }
+
+    await save_summarize(file_id, summary)
   }
 
 }

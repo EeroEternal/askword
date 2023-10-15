@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-export default function Input({ handleFinish }) {
+export default function Input({ handleFinish, focus }) {
   const init_height = 20;
   const [height, setHeight] = useState(init_height); // Default height
   const [active, setActive] = useState(false);
@@ -9,6 +9,11 @@ export default function Input({ handleFinish }) {
   const svg_css = `w-6 h-6 ${active ? 'stroke-gray-600' : 'stroke-gray-300'}`
   const input_css = "flex flex-row bg-white border rounded drop-shadow shadow-xs rounded-lg w-full items-center justify-between"
   const textarea_css = "w-full text-sm pl-4 resize-none overflow-y-hidden focus:outline-none border-0 focus:ring-0 rounded-lg mt-2 max-h-80"
+
+  // if focus is true, focus on textarea
+  useEffect(() => {
+    focus && document.getElementById('main-input').focus();
+  })
 
 
   function handleKeyDown(event) {
@@ -46,7 +51,7 @@ export default function Input({ handleFinish }) {
 
     <div className={input_css}>
       <div className='w-full pr-12 py-2'>
-        <textarea style={{ height: `${height}px` }} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} className={textarea_css} placeholder="请提问..." spellCheck="false" rows="1" tabIndex="0" autoFocus />
+        <textarea id="main-input" style={{ height: `${height}px` }} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} className={textarea_css} placeholder="请提问..." spellCheck="false" rows="1" tabIndex="0" />
       </div>
 
       <div className="relative">

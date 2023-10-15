@@ -3,7 +3,7 @@ import Input from './input'
 import List from './list'
 import Thread from './thread'
 import Banner from './banner'
-const { sendPrompt, onResponse, getThread, delThread } = window.electronAPI
+const { sendPrompt, onResponse, getThread, delThread, getThreads } = window.electronAPI
 import { v4 as uuidv4 } from 'uuid';
 
 export default function Chat({ config }) {
@@ -12,39 +12,28 @@ export default function Chat({ config }) {
   const [fileID, setFileID] = useState("")
   const [listScroll, SetListScroll] = useState(false)
   const [first, SetFirst] = useState(true) // first init layout
+  const [inputFocus, SetInputFocus] = useState(true)
+  const [threads, SetThreads] = useState([])
 
   // css style
   const center_css = "flex justify-center items-center"
   const chat_css = center_css + ' fixed bottom-0 left-1/2 translate-x-[-50%] mb-3 z-10'
 
-  // input prompt event
-  const handleInput = (value) => {
+  useEffect(() => {
+    console.log("use effect")
+    setIPC()
+
+    getThreads()
+
+  }, [])
+
+  useEffect(() => {
+    console.log("use effect 2", first)
     if (first) {
-      SetFirst(false);
+      // getThreads()
     }
+  }, [])
 
-    // first time input
-    if (!chatMode) {
-      // set to chat mode
-      SetChatMode(true)
-    }
-
-    let file_id = fileID === "" ? uuidv4() : fileID;
-
-    // send prompt request
-    sendPrompt(value, file_id)
-
-    // set file id
-    setFileID(file_id)
-
-    // init chat list
-    if (!chatMode) {
-      SetChatList([{ prompt: value, answer: "" }])
-    } else {
-      SetChatList([...chatList, { prompt: value, answer: "" }])
-      SetListScroll(true)
-    }
-  }
 
   const setIPC = () => {
     onResponse('thread', (_event, value) => {
@@ -73,19 +62,78 @@ export default function Chat({ config }) {
         return [...newChatList]
       });
     })
+
+    onResponse('threads', (_event, value) => {
+      console.log("threads response", value)
+      SetThreads(value)
+    });
+
+    onResponse('del-thread', (_event, value) => {
+      console.log('del thread', value)
+      console.log("threads", threads)
+      SetThreads(threads.filter(thread => thread.file_id !== value))
+    });
   }
 
 
+  // input prompt event
+  const handleInput = (value) => {
+    console.log('fileID', fileID)
+    console.log('chat mode', chatMode)
+    if (first) {
+      SetFirst(false);
+    }
+
+    // 在主页输入 input，而不是在聊天页输入
+    if (!chatMode) {
+      // 在主页
+      // 随机生成一个 id，作为 file_id
+      const file_id = uuidv4()
+      setFileID(file_id)
+
+      console.log('generate id', file_id)
+
+      // 进入聊天模式
+      SetChatMode(true)
+
+      // 设置初始的 chat list
+      SetChatList([{ prompt: value, answer: "" }])
+
+      // 发送 prompt 给 main process
+      sendPrompt(value, file_id)
+    } else {
+      // 在聊天页，增加内容到现有的 chat list
+      SetChatList([...chatList, { prompt: value, answer: "" }])
+
+      // 滚动到最后一行
+      SetListScroll(true)
+
+      // 发送 prompt 给 main process
+      sendPrompt(value, fileID)
+    }
+  }
   // select list item event
   const handleSelect = (file_id) => {
+    console.log('select file id', file_id)
     // send get thread request to main process
     getThread(file_id)
 
+    // first init layout
     SetFirst(false)
+
+    // set fileID
+    setFileID(file_id)
+
+    // input get focus
+    SetInputFocus(true)
+
+    // set chat mode
+    SetChatMode(true)
   }
 
   // thread delete event
   const handleDel = (file_id) => {
+    console.log("del file id,threads", file_id, threads)
     delThread(file_id)
     // set chat list to empty
     SetChatList([])
@@ -96,14 +144,13 @@ export default function Chat({ config }) {
   const handleHome = () => {
     SetChatMode(false)
     SetListScroll(false)
+    setFileID("")
   }
 
   // banner click settings
   const handleSetting = () => {
     console.log("click settings")
   }
-
-  useEffect(() => { setIPC() }, [])
 
   return (
     <div className={`flex flex-col gap-y-4 bg-white`} >
@@ -121,14 +168,14 @@ export default function Chat({ config }) {
       }
       <div className={chatMode ? chat_css : center_css}>
         <div className={first ? 'w-[40rem]' : 'w-[40rem] pt-20'} >
-          <Input handleFinish={handleInput} />
+          <Input handleFinish={handleInput} focus={inputFocus} />
         </div>
       </div>
       {
         !chatMode &&
         <div className={center_css}>
           <div className='w-[40rem]'>
-            <Thread handleSelect={handleSelect} handleDel={handleDel} />
+            <Thread threads={threads} handleSelect={handleSelect} handleDel={handleDel} />
           </div>
         </div>
       }

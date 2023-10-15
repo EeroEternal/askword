@@ -10,7 +10,7 @@ async function save_summarize(file_id, answer) {
   const filePath = app.getPath('userData') + '/chat/' + fileName
 
   // send answer to summarize
-  const summarize_prompt = "总结以下内容为 20 个字以内:" + answer
+  const summarize_prompt = "总结以下内容为一个连贯的标题,15字以内:" + answer
 
   // get summarize
   let summarize = await stream_request(summarize_prompt)
@@ -44,6 +44,7 @@ async function save_summarize(file_id, answer) {
 }
 
 async function send_prompt(mainWindow, prompt, file_id) {
+  console.log('send prompt', prompt, file_id)
 
   try {
     const send_response = (value) => {

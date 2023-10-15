@@ -5,12 +5,15 @@ const { load_threads, load_thread, del_thread } = require('./data.cjs');
 function init_ipc(mainWindow) {
   // init request ipc
   ipcMain.on('prompt', async (_event, value, file_id) => {
+    console.log("ipc main receive prompt", value, file_id)
     await send_prompt(mainWindow, value, file_id)
   });
 
   // get threads
   ipcMain.on('threads', (_event) => {
     const threads = load_threads();
+
+    console.log("get threads", threads)
     mainWindow.webContents.send('threads', threads);
   });
 
