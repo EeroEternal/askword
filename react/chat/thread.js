@@ -18,6 +18,7 @@ export default function Thread({ threads, handleSelect, handleDel }) {
       handleSelect(file_id);
     } else {
       // click delete button
+      console.log('handle delete id', file_id)
       handleDel(file_id)
     }
   }

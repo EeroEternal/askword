@@ -64,15 +64,17 @@ export default function Chat({ config }) {
     })
 
     onResponse('threads', (_event, value) => {
-      console.log("threads response", value)
       SetThreads(value)
     });
 
     onResponse('del-thread', (_event, value) => {
-      console.log('del thread', value)
-      console.log("threads", threads)
-      SetThreads(threads.filter(thread => thread.file_id !== value))
-    });
+      SetThreads(prevThreads => {
+        console.log("prev threads", prevThreads)
+        let newThreads = [...prevThreads]
+        return newThreads.filter(thread => thread.file_id !== value
+        )
+      });
+    })
   }
 
 
@@ -145,6 +147,7 @@ export default function Chat({ config }) {
     SetChatMode(false)
     SetListScroll(false)
     setFileID("")
+    getThreads()
   }
 
   // banner click settings
