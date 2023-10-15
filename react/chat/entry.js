@@ -20,20 +20,11 @@ export default function Chat({ config }) {
   const chat_css = center_css + ' fixed bottom-0 left-1/2 translate-x-[-50%] mb-3 z-10'
 
   useEffect(() => {
-    console.log("use effect")
     setIPC()
 
     getThreads()
 
   }, [])
-
-  useEffect(() => {
-    console.log("use effect 2", first)
-    if (first) {
-      // getThreads()
-    }
-  }, [])
-
 
   const setIPC = () => {
     onResponse('thread', (_event, value) => {
@@ -69,7 +60,6 @@ export default function Chat({ config }) {
 
     onResponse('del-thread', (_event, value) => {
       SetThreads(prevThreads => {
-        console.log("prev threads", prevThreads)
         let newThreads = [...prevThreads]
         return newThreads.filter(thread => thread.file_id !== value
         )
@@ -80,8 +70,6 @@ export default function Chat({ config }) {
 
   // input prompt event
   const handleInput = (value) => {
-    console.log('fileID', fileID)
-    console.log('chat mode', chatMode)
     if (first) {
       SetFirst(false);
     }
@@ -116,7 +104,6 @@ export default function Chat({ config }) {
   }
   // select list item event
   const handleSelect = (file_id) => {
-    console.log('select file id', file_id)
     // send get thread request to main process
     getThread(file_id)
 
@@ -135,7 +122,6 @@ export default function Chat({ config }) {
 
   // thread delete event
   const handleDel = (file_id) => {
-    console.log("del file id,threads", file_id, threads)
     delThread(file_id)
     // set chat list to empty
     SetChatList([])

@@ -7,11 +7,11 @@ import '../react/main.css';
 
 ;
 
-window.electronAPI.handleConfig((_event, value) => {
-  const root = ReactDOM.createRoot(document.getElementById('root'));
-  root.render(
-    <React.StrictMode>
-      <Chat config={value} />
-    </React.StrictMode>
-  )
-})
+// window.electronAPI.handleConfig((_event, value) => {
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  // <React.StrictMode>
+  <Chat />
+  // </React.StrictMode>
+)
+// })
