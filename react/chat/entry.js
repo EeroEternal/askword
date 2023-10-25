@@ -5,6 +5,8 @@ import Thread from './thread'
 import Banner from './banner'
 const { sendPrompt, onResponse, getThread, delThread, getThreads } = window.electronAPI
 import { v4 as uuidv4 } from 'uuid';
+import Notify from '../component/notify'
+import { NotifyProvider } from './provider'
 
 export default function Chat({ config }) {
   const [chatMode, SetChatMode] = useState(false)
@@ -14,6 +16,7 @@ export default function Chat({ config }) {
   const [first, SetFirst] = useState(true) // first init layout
   const [inputFocus, SetInputFocus] = useState(true)
   const [threads, SetThreads] = useState([])
+  const [title, SetTitle] = useState("") // list title
 
   // css style
   const center_css = "flex justify-center items-center"
@@ -24,6 +27,8 @@ export default function Chat({ config }) {
 
     getThreads()
 
+    // for debug
+    handleSelect("a1d4ad28-b65a-4394-812c-f5563db45056")
   }, [])
 
   const setIPC = () => {
@@ -33,6 +38,7 @@ export default function Chat({ config }) {
 
       // set chat mode
       SetChatMode(true)
+
     });
 
     // wait for response
@@ -56,7 +62,18 @@ export default function Chat({ config }) {
 
     onResponse('threads', (_event, value) => {
       SetThreads(value)
+
+
+      // get thread match file_id == a1d4ad28-b65a-4394-812c-f5563db45056
+      const threads = value
+      const thread = threads.find(thread => thread.file_id === "a1d4ad28-b65a-4394-812c-f5563db45056")
+      if (!chatMode) SetTitle(thread.title)
     });
+
+    onResponse('titleReponse', (_event, value) => {
+      //if not chat mode ,set title
+      if (!chatMode) SetTitle(value)
+    })
 
     onResponse('del-thread', (_event, value) => {
       SetThreads(prevThreads => {
@@ -80,8 +97,6 @@ export default function Chat({ config }) {
       // 随机生成一个 id，作为 file_id
       const file_id = uuidv4()
       setFileID(file_id)
-
-      console.log('generate id', file_id)
 
       // 进入聊天模式
       SetChatMode(true)
@@ -110,6 +125,10 @@ export default function Chat({ config }) {
     // first init layout
     SetFirst(false)
 
+    // set banner title
+    const thread = threads.find(thread => thread.file_id === file_id)
+    if (thread) SetTitle(thread.title)
+
     // set fileID
     setFileID(file_id)
 
@@ -131,6 +150,7 @@ export default function Chat({ config }) {
   // banner click home
   const handleHome = () => {
     SetChatMode(false)
+    SetTitle("")
     SetListScroll(false)
     setFileID("")
     getThreads()
@@ -142,33 +162,41 @@ export default function Chat({ config }) {
   }
 
   return (
-    <div className={`flex flex-col gap-y-4 bg-white`} >
-      <div className={`fixed top-0 left-0 w-full z-10`}>
-        <Banner clickHome={handleHome} clickSetting={handleSetting} />
-      </div>
-      {first &&
-        <h1 className="text-3xl mb-4 pt-40 text-center">欢迎使用</h1>
-      }
-      {
-        chatMode &&
-        <div className={`px-10 pt-2 transition - opacity duration - 500 ${chatMode ? 'opacity-100' : 'opacity-0'} `}>
-          <List list={chatList} scrollEnd={listScroll} />
+    // use NotifyContext.Provider to provide the context value
+    <NotifyProvider>
+      <Notify />
+      <div className={`flex flex-col gap-y-4`} >
+
+        <div className={`fixed top-0 left-0 w-full z-10`}>
+          <Banner clickHome={handleHome} clickSetting={handleSetting} title={title} />
+
+          <hr className="border-gray-200" />
+
         </div>
-      }
-      <div className={chatMode ? chat_css : center_css}>
-        <div className={first ? 'w-[40rem]' : 'w-[40rem] pt-20'} >
-          <Input handleFinish={handleInput} focus={inputFocus} />
-        </div>
-      </div>
-      {
-        !chatMode &&
-        <div className={center_css}>
-          <div className='w-[40rem]'>
-            <Thread threads={threads} handleSelect={handleSelect} handleDel={handleDel} />
+        {first &&
+          <h1 className="text-3xl mb-4 pt-40 text-center">欢迎使用</h1>
+        }
+        {
+          chatMode &&
+          <div className={`px-10 pt-2 transition - opacity duration - 500 ${chatMode ? 'opacity-100' : 'opacity-0'} `}>
+            <List list={chatList} scrollEnd={listScroll} />
+          </div>
+        }
+        <div className={chatMode ? chat_css : center_css}>
+          <div className={first ? 'w-[40rem]' : 'w-[40rem] pt-20'} >
+            <Input handleFinish={handleInput} focus={inputFocus} />
           </div>
         </div>
-      }
-    </div >
+        {
+          !chatMode &&
+          <div className={center_css}>
+            <div className='w-[40rem]'>
+              <Thread threads={threads} handleSelect={handleSelect} handleDel={handleDel} />
+            </div>
+          </div>
+        }
+      </div>
 
+    </NotifyProvider >
   )
 }

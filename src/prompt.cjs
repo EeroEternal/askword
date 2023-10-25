@@ -10,7 +10,7 @@ async function save_summarize(file_id, answer) {
   const filePath = app.getPath('userData') + '/chat/' + fileName
 
   // send answer to summarize
-  const summarize_prompt = "总结以下内容为一个连贯的标题,15字以内:" + answer
+  const summarize_prompt = "总结以下内容为一个连贯的标题,15字以内，不要有冒号在前后:" + answer
 
   // get summarize
   let summarize = await stream_request(summarize_prompt)
@@ -41,6 +41,8 @@ async function save_summarize(file_id, answer) {
 
   // write to file
   await fs.promises.writeFile(filePath, JSON.stringify(threads));
+
+  return summarize
 }
 
 async function send_prompt(mainWindow, prompt, file_id) {
@@ -55,10 +57,12 @@ async function send_prompt(mainWindow, prompt, file_id) {
 
     // check file exist. if not create it, and write data
     let answer = dataChunks.join('') + "\n";
-    await check_create(file_id, {
+    let summarize = await check_create(file_id, {
       "prompt": prompt,
       "answer": answer
     }, save_summarize)
+
+    mainWindow.webContents.send('titleReponse', summarize);
   }
   catch (error) {
     console.error(`Error in fetch request: ${error.message}`);

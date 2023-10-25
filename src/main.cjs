@@ -10,7 +10,7 @@ if (require('electron-squirrel-startup')) {
 const createWindow = (config) => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 1200,
+    width: 800,
     height: 800,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
@@ -25,7 +25,6 @@ const createWindow = (config) => {
 
   // Send config to renderer, must **finish load**
   mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('load-config', config);
     // init request ipc
     init_ipc(mainWindow)
   });
