@@ -1,9 +1,11 @@
-import { createContext } from 'react'
+import { createContext } from "react";
 
-export const NotifyContext = createContext({
+const NotifyContext = createContext({
   pos: { top: 0, left: 0 },
   content: "",
   isOpen: false,
-  success: () => { },
-  error: () => { },
+  success: () => {},
+  error: () => {},
 });
+
+export { NotifyContext };

@@ -1,25 +1,26 @@
-const { app } = require('electron');
-const fs = require('fs');
-const { check_create } = require("./file.cjs")
-const { stream_request } = require('./request.cjs');
+const { app } = require("electron");
+const fs = require("fs");
+const { check_create } = require("./file.cjs");
+const { stream_request } = require("./request.cjs");
 
 // summary for each file, save to threads.json
 // threads.json: [{"file_id": "xxx", "title": "xxx"}, ...]
 async function save_summarize(file_id, answer) {
-  const fileName = "threads.json"
-  const filePath = app.getPath('userData') + '/chat/' + fileName
+  const fileName = "threads.json";
+  const filePath = app.getPath("userData") + "/chat/" + fileName;
 
   // send answer to summarize
-  const summarize_prompt = "总结以下内容为一个连贯的标题,15字以内，不要有冒号在前后:" + answer
+  const summarize_prompt =
+    "总结以下内容为一个连贯的标题,15字以内，不要有冒号在前后:" + answer;
 
   // get summarize
-  let summarize = await stream_request(summarize_prompt)
+  let summarize = await stream_request(summarize_prompt);
 
   // log symmarize type
-  summarize = summarize.join('')
+  summarize = summarize.join("");
 
   // save to threads.json
-  let threads = []
+  let threads = [];
   if (fs.existsSync(filePath)) {
     threads = JSON.parse(fs.readFileSync(filePath));
   }
@@ -27,46 +28,47 @@ async function save_summarize(file_id, answer) {
   // check if file_id exist in threads
   threads.forEach((thread) => {
     if (thread.file_id == file_id) {
-      thread.title = summarize
+      thread.title = summarize;
     }
   });
 
   // if not exist, add it
   if (threads.filter((thread) => thread.file_id == file_id).length == 0) {
     threads.push({
-      "file_id": file_id,
-      "title": summarize
-    })
+      file_id: file_id,
+      title: summarize,
+    });
   }
 
   // write to file
   await fs.promises.writeFile(filePath, JSON.stringify(threads));
 
-  return summarize
+  return summarize;
 }
 
 async function send_prompt(mainWindow, prompt, file_id) {
-  console.log('send prompt', prompt, file_id)
-
   try {
     const send_response = (value) => {
-      mainWindow.webContents.send('promptReponse', value.toString());
-    }
+      mainWindow.webContents.send("promptReponse", value.toString());
+    };
 
-    let dataChunks = await stream_request(prompt, send_response)
+    let dataChunks = await stream_request(prompt, send_response);
 
     // check file exist. if not create it, and write data
-    let answer = dataChunks.join('') + "\n";
-    let summarize = await check_create(file_id, {
-      "prompt": prompt,
-      "answer": answer
-    }, save_summarize)
+    let answer = dataChunks.join("") + "\n";
+    let summarize = await check_create(
+      file_id,
+      {
+        prompt: prompt,
+        answer: answer,
+      },
+      save_summarize,
+    );
 
-    mainWindow.webContents.send('titleReponse', summarize);
-  }
-  catch (error) {
+    mainWindow.webContents.send("titleReponse", summarize);
+  } catch (error) {
     console.error(`Error in fetch request: ${error.message}`);
   }
 }
 
-module.exports = { send_prompt }
+module.exports = { send_prompt };
