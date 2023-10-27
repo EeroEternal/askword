@@ -1,5 +1,5 @@
 import ReactMarkdown from "react-markdown";
-import { useEffect, useState, useContext } from "react";
+import { useEffect } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Toolbar from "./toolbar";
@@ -20,7 +20,13 @@ export default function List({ list, scrollEnd, fileID }) {
   const showToolbar = (state, index) => {
     const toolbar = document.getElementById(`toolbar-${index}`);
     if (toolbar) {
-      toolbar.style.visibility = state ? "visible" : "hidden";
+      if (state) {
+        toolbar.style.visibility = "visible";
+      } else {
+        setTimeout(() => {
+          toolbar.style.visibility = "hidden";
+        }, 100);
+      }
     }
   };
 

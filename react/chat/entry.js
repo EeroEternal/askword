@@ -35,7 +35,6 @@ export default function Chat({ config }) {
 
   const setIPC = () => {
     onResponse("thread", (_event, value) => {
-      console.log("thread value", value);
       // value is thread chat list
       SetChatList([...value]);
 

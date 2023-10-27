@@ -55,7 +55,7 @@ async function send_prompt(mainWindow, prompt, file_id) {
     let dataChunks = await stream_request(prompt, send_response);
 
     // check file exist. if not create it, and write data
-    let answer = dataChunks.join("") + "\n";
+    let answer = dataChunks.join("");
     let summarize = await check_create(
       file_id,
       {

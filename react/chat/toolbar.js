@@ -5,9 +5,8 @@ const { delRecord } = window.electronAPI;
 export default function Toolbar({ index, list, fileID }) {
   const notify = useContext(NotifyContext);
 
-  const showNotify = (msg) => {
+  const showNotify = (msg, pos) => {
     // show notify message at the position top of the button
-    const pos = e.target.getBoundingClientRect();
     if (!pos) {
       throw new Error("Unable to retrieve position");
     }
@@ -26,7 +25,8 @@ export default function Toolbar({ index, list, fileID }) {
     navigator.clipboard.writeText(text);
 
     // show notify message
-    showNotify("已复制");
+    const pos = e.target.getBoundingClientRect();
+    showNotify("已复制", pos);
   };
 
   // delete record from list
