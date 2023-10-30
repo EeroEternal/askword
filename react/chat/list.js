@@ -19,6 +19,7 @@ export default function List({ list, scrollEnd, fileID }) {
 
   const showToolbar = (state, index) => {
     const toolbar = document.getElementById(`toolbar-${index}`);
+
     if (toolbar) {
       if (state) {
         toolbar.style.visibility = "visible";
@@ -32,16 +33,18 @@ export default function List({ list, scrollEnd, fileID }) {
 
   return (
     <div className="pt-12">
-      <div className="mb-20 px-3 pt-2">
+      <div className="mx-auto max-w-3xl">
         {list.map((item, index) => {
           const answer = item.answer;
           const prompt = item.prompt;
 
           return (
             <div key={index} id={`list-${index}`} className="rounded-lg">
-              <div className="break-words px-3 py-3 text-2xl">{prompt}</div>
+              <div className="my-2 break-words rounded-br-2xl bg-zinc-100 px-1 py-2 text-base">
+                {prompt}
+              </div>
 
-              <div className="overflow-hidden rounded bg-white px-3">
+              <div className="overflow-hidden rounded bg-white px-1 text-base leading-7">
                 <div
                   className="text-gray-600"
                   onMouseEnter={() => showToolbar(true, index)}
@@ -68,19 +71,21 @@ export default function List({ list, scrollEnd, fileID }) {
                       },
                     }}
                   />
-                  <div id={`toolbar-${index}`} style={{ visibility: "hidden" }}>
+                  <div
+                    id={`toolbar-${index}`}
+                    style={{ visibility: "hidden" }}
+                    onMouseEnter={() => showToolbar(true, index)}
+                  >
                     <Toolbar index={index} list={list} fileID={fileID} />
                   </div>
                 </div>
               </div>
-
-              {list.length > 1 && (
-                <hr className="ml-2.5 mt-3 border-gray-100" />
-              )}
             </div>
           );
         })}
       </div>
+      {/* add some margin */}
+      <div className="h-12"></div>
     </div>
   );
 }

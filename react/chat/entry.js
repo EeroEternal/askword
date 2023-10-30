@@ -7,9 +7,9 @@ const { sendPrompt, onResponse, getThread, delThread, getThreads } =
   window.electronAPI;
 import { v4 as uuidv4 } from "uuid";
 import Notify from "../component/notify";
-import { NotifyProvider, ListProvider } from "./provider";
+import { NotifyProvider } from "./provider";
 
-export default function Chat({ config }) {
+export default function Chat({}) {
   const [chatMode, SetChatMode] = useState(false);
   const [chatList, SetChatList] = useState([]);
   const [fileID, setFileID] = useState("");
@@ -18,6 +18,7 @@ export default function Chat({ config }) {
   const [inputFocus, SetInputFocus] = useState(true);
   const [threads, SetThreads] = useState([]);
   const [title, SetTitle] = useState(""); // list title
+  const [wait, SetWait] = useState(false); // if wait for response
 
   // css style
   const center_css = "flex justify-center items-center";
@@ -30,7 +31,7 @@ export default function Chat({ config }) {
     getThreads();
 
     // for debug
-    handleSelect("a1d4ad28-b65a-4394-812c-f5563db45056");
+    // handleSelect("a1d4ad28-b65a-4394-812c-f5563db45056");
   }, []);
 
   const setIPC = () => {
@@ -47,6 +48,13 @@ export default function Chat({ config }) {
       // check value is empty
       if (value === "") return;
 
+      // got end signal, #finished#
+      if (value === "#finished#") {
+        SetWait(false);
+        return;
+      }
+
+      // update chat list
       SetChatList((prevChatList) => {
         let newChatList = [...prevChatList];
 
@@ -65,11 +73,11 @@ export default function Chat({ config }) {
       SetThreads(value);
 
       // get thread match file_id == a1d4ad28-b65a-4394-812c-f5563db45056
-      const threads = value;
-      const thread = threads.find(
-        (thread) => thread.file_id === "a1d4ad28-b65a-4394-812c-f5563db45056",
-      );
-      if (!chatMode) SetTitle(thread.title);
+      // const threads = value;
+      // const thread = threads.find(
+      //   (thread) => thread.file_id === "a1d4ad28-b65a-4394-812c-f5563db45056",
+      // );
+      // if (!chatMode) SetTitle(thread.title);
     });
 
     onResponse("titleReponse", (_event, value) => {
@@ -121,6 +129,8 @@ export default function Chat({ config }) {
       // 发送 prompt 给 main process
       sendPrompt(value, fileID);
     }
+
+    SetWait(true);
   };
   // select list item event
   const handleSelect = (file_id) => {
@@ -166,7 +176,6 @@ export default function Chat({ config }) {
   };
 
   return (
-    // use NotifyContext.Provider to provide the context value
     <NotifyProvider>
       <Notify />
       <div className={`flex flex-col gap-y-4`}>
@@ -190,13 +199,13 @@ export default function Chat({ config }) {
           </div>
         )}
         <div className={chatMode ? chat_css : center_css}>
-          <div className={first ? "w-[40rem]" : "w-[40rem] pt-20"}>
-            <Input handleFinish={handleInput} focus={inputFocus} />
+          <div className={first ? "min-w-[35rem] " : "min-w-[35rem] pt-20"}>
+            <Input handleFinish={handleInput} focus={inputFocus} wait={wait} />
           </div>
         </div>
         {!chatMode && (
           <div className={center_css}>
-            <div className="w-[40rem]">
+            <div className="min-w-[35rem]">
               <Thread
                 threads={threads}
                 handleSelect={handleSelect}

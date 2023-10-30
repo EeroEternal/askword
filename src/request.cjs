@@ -25,11 +25,10 @@ async function stream_request(prompt, func) {
   for await (const chunk of response.body) {
     const value = chunk.toString();
 
-    console.log("value", value);
-
     if (func) func(value);
 
-    dataChunks.push(value);
+    // check end signal, #finished#
+    if (value !== "#finished#") dataChunks.push(value);
   }
 
   return dataChunks;
