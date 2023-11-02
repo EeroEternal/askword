@@ -127,7 +127,8 @@ export default function Chat({}) {
       SetListScroll(true);
 
       // 发送 prompt 给 main process
-      sendPrompt(value, fileID);
+      // 把 title 作为prompt一部分发送
+      sendPrompt(title + " " + value, fileID);
     }
 
     SetWait(true);
@@ -178,8 +179,8 @@ export default function Chat({}) {
   return (
     <NotifyProvider>
       <Notify />
-      <div className={`flex flex-col gap-y-4`}>
-        <div className={`fixed left-0 top-0 z-10 w-full`}>
+      <div className="flex flex-col gap-y-4">
+        <div className="fixed left-0 top-0 z-10 w-full bg-white">
           <Banner
             clickHome={handleHome}
             clickSetting={handleSetting}
