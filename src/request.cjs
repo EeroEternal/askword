@@ -8,7 +8,8 @@ const fetch = (...args) =>
 // prompt: request prompt; func: function to execute when get response every stream
 async function stream_request(prompt, func) {
   let dataChunks = [];
-  const url = "http://127.0.0.1:8002/router/spark";
+  // const url = "http://127.0.0.1:8002/router/spark";
+  const url = "http://askword.cn/router/spark";
 
   const data = JSON.stringify({ prompt: prompt });
 

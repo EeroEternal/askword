@@ -1,6 +1,6 @@
-const { app, BrowserWindow } = require("electron");
-const { load_config } = require("./config.cjs");
+const { app, BrowserWindow, Menu } = require("electron");
 const { init_ipc } = require("./ipc.cjs");
+const { ask_menu } = require("./menu.cjs");
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -12,17 +12,21 @@ const createWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 1000,
     height: 800,
-    x: 20,
-    y: 120,
+    title: "问字",
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
   });
 
+  // set menu
+  const menu = Menu.buildFromTemplate(ask_menu);
+  Menu.setApplicationMenu(menu);
+
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   // Send config to renderer, must **finish load**
   mainWindow.webContents.on("did-finish-load", () => {
@@ -32,11 +36,11 @@ const createWindow = () => {
 };
 
 const init = () => {
-  // load config file
-  config = load_config();
+  // set app name
+  app.setName("问字");
 
   // create window
-  createWindow(config);
+  createWindow();
 };
 
 // This method will be called when Electron has finished
